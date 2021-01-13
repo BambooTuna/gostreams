@@ -1,7 +1,7 @@
 # gostreams
 Go's Stream library based on Akka Stream
 
-## Usage
+## Sample
 
 `go get github.com/BambooTuna/gostreams`
 
