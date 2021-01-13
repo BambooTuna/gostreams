@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gostreams/stream"
+	"github.com/BambooTuna/gostreams/stream"
 	"sync"
 	"time"
 )
