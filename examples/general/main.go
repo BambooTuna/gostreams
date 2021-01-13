@@ -18,7 +18,7 @@ func main() {
 	groupFlow := stream.NewGroupFlow(5)
 	sink := stream.NewPlainSink(func(item []interface{}) {
 		//time.Sleep(time.Millisecond * 100)
-		fmt.Println("Sink", item)
+		fmt.Println("Output: ", item)
 	})
 
 	source.Via(flow1)
@@ -31,6 +31,7 @@ func main() {
 		for {
 			time.Sleep(time.Millisecond * 100)
 			v := fmt.Sprintf("item %d", i)
+			fmt.Println("Input: ", v)
 			source.Publish(v)
 			i++
 		}
