@@ -3,6 +3,7 @@ package stream
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"sync"
 )
 
@@ -11,15 +12,15 @@ type Flow struct {
 
 	in *In
 
-	outQueue chan Item
+	outQueue chan []reflect.Value
 
-	mapFunc func(Item) Item
+	fn interface{}
 }
 
-func NewFlow(mapFunc func(Item) Item) *Flow {
+func NewFlow(fn interface{}) *Flow {
 	return &Flow{
-		outQueue: make(chan Item, 30),
-		mapFunc:  mapFunc,
+		outQueue: make(chan []reflect.Value, 30),
+		fn:       fn,
 	}
 }
 
@@ -34,6 +35,11 @@ func (f *Flow) run() error {
 		return errors.New("please attach source ")
 	}
 
+	if err := isValidHandler(f.fn); err != nil {
+		return err
+	}
+	rv := reflect.ValueOf(f.fn)
+
 	if err := f.in.run(); err != nil {
 		return err
 	}
@@ -41,7 +47,7 @@ func (f *Flow) run() error {
 	go func() {
 		for arg := range f.in.queue {
 			select {
-			case f.outQueue <- f.mapFunc(arg):
+			case f.outQueue <- rv.Call(arg):
 			default:
 				fmt.Println("Overflowing: The element disappears.", arg)
 			}

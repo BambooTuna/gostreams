@@ -2,25 +2,26 @@ package stream
 
 import (
 	"fmt"
+	"reflect"
 	"sync"
 )
 
 type Source struct {
 	mtx      sync.RWMutex
-	outQueue chan Item
+	outQueue chan []reflect.Value
 }
 
 func NewSource() *Source {
 	return &Source{
-		outQueue: make(chan Item, 30),
+		outQueue: make(chan []reflect.Value, 30),
 	}
 }
 
-func (s *Source) Publish(arg Item) {
+func (s *Source) Publish(arg interface{}) {
 	s.mtx.RLock()
 	defer s.mtx.RUnlock()
 	select {
-	case s.outQueue <- arg:
+	case s.outQueue <- buildHandlerArg(arg):
 	default:
 		fmt.Println("Overflowing: The element disappears", arg)
 	}

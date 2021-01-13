@@ -9,13 +9,13 @@ import (
 
 func main() {
 	source := stream.NewSource()
-	flow1 := stream.NewFlow(func(item stream.Item) stream.Item {
+	flow1 := stream.NewFlow(func(item string) string {
 		return item + "!!!!"
 	})
-	flow2 := stream.NewFlow(func(item stream.Item) stream.Item {
+	flow2 := stream.NewFlow(func(item string) string {
 		return item + "....."
 	})
-	sink := stream.NewSink(func(item stream.Item) {
+	sink := stream.NewSink(func(item string) {
 		time.Sleep(time.Millisecond * 100)
 		fmt.Println("Sink", item)
 	})
@@ -29,7 +29,7 @@ func main() {
 		for {
 			time.Sleep(time.Millisecond * 1000)
 			v := fmt.Sprintf("item %d", i)
-			source.Publish(stream.Item(v))
+			source.Publish(v)
 			i++
 		}
 	}()
